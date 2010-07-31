@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Binary Test</title>
+        <title>Test Page</title>
         <style>
             html, body, #map {
                 height: 100%;
@@ -10,15 +10,15 @@
         </style>
     </head>
     <body>
-        <div id="map"></div>
+        <div id="map">See Console Logs</div>
         <script src="stream.js"></script>
         <script src="shapefile.js"></script>
         <script src="dbf.js"></script>
         <script type="text/javascript">
             var starttime = +new Date,
                 shapefile = new Shapefile({
-                    shp: "testdata/TM_WORLD_BORDERS_SIMPL-0.3.shp",
-                    dbf: "testdata/TM_WORLD_BORDERS_SIMPL-0.3.dbf"
+                    shp: "testdata/testshape.shp",
+                    dbf: "testdata/testshape.dbf"
                 }, function(data){
                     console.log("took",new Date - starttime,"milliseconds")
                     console.log(data);
