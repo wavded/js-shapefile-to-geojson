@@ -290,7 +290,8 @@
                                 part = [],
                                 point
 
-                            for (var p = partIndex; p < (partIndex[pt+1] || points.length); p++){
+                            // partIndex 0 == main poly, partIndex > 0 == holes in poly
+                            for (var p = partIndex; p < (parts[pt+1] || points.length); p++){
                                 point = points[p]
                                 part.push([point.x,point.y])
                             }

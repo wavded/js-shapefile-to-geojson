@@ -11,18 +11,34 @@
     </head>
     <body>
         <div id="map">See Console Logs</div>
+        <script src="http://rs1.adc4gis.com/js/openlayers/2.9.1/OpenLayers-Proj4.js"></script>
         <script src="stream.js"></script>
         <script src="shapefile.js"></script>
         <script src="dbf.js"></script>
         <script type="text/javascript">
+            OpenLayers._getScriptLocation = function(){
+                return "http://rs1.adc4gis.com/js/openlayers/2.9.1/";
+            };
+
+
             var starttime = +new Date,
+                map = new OpenLayers.Map("map",{allOverlays: true}),
+                parser = new OpenLayers.Format.GeoJSON(),
+                vector = new OpenLayers.Layer.Vector("Converted"),
+
                 shapefile = new Shapefile({
-                    shp: "testdata/testshape.shp",
-                    dbf: "testdata/testshape.dbf"
+                    shp: "testdata/world.shp",
+                    dbf: "testdata/world.dbf"
                 }, function(data){
+                    var features = parser.read(data.geojson);
+                    vector.addFeatures(features);
+                    map.zoomToExtent(vector.getDataExtent());
+
                     console.log("took",new Date - starttime,"milliseconds")
                     console.log(data);
                 })
+
+            map.addLayer(vector);
         </script>
     </body>
 </html>
