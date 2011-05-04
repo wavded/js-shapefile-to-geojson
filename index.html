@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+    <head>
+        <title>js-shapefile-to-geojson Demo Page</title>
+        <style>
+            html, body {
+                height: 100%;
+                width: 100%;
+            }
+            #map {
+                height: 400px;
+                background-color: #eee;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>js-shapefile-to-geojson Demo Page</h2>
+        <p>Pure client-side JavaScript (no server side code) parsing of shapefiles and dbase files to GeoJSON format displayed using OpenLayers.</p>
+        <div id="map"></div>
+        <p>View project at <a href="http://github.com/wavded/js-shapefile-to-geojson">http://github.com/wavded/js-shapefile-to-geojson</a>.
+        <script src="http://rs1.adc4gis.com/js/openlayers/2.9.1/OpenLayers-Proj4.js"></script>
+        <script src="stream.js"></script>
+        <script src="shapefile.js"></script>
+        <script src="dbf.js"></script>
+        <script type="text/javascript">
+            OpenLayers._getScriptLocation = function(){
+                return "http://rs1.adc4gis.com/js/openlayers/2.9.1/";
+            };
+
+
+            var starttime = +new Date,
+                map = new OpenLayers.Map("map",{allOverlays: true}),
+                parser = new OpenLayers.Format.GeoJSON(),
+                vector = new OpenLayers.Layer.Vector("Converted"),
+
+                shapefile = new Shapefile({
+                    shp: "testdata/world.shp",
+                    dbf: "testdata/world.dbf"
+                }, function(data){
+                    var features = parser.read(data.geojson);
+                    vector.addFeatures(features);
+                    map.zoomToExtent(vector.getDataExtent());
+
+                    console.log("took",new Date - starttime,"milliseconds")
+                    console.log(data);
+                })
+
+            map.addLayer(vector);
+        </script>
+    </body>
+</html>
+
