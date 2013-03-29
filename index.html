@@ -35,8 +35,8 @@
                 vector = new OpenLayers.Layer.Vector("Converted"),
 
                 shapefile = new Shapefile({
-                    shp: "testdata/world.shp",
-                    dbf: "testdata/world.dbf"
+                    shp: "sld_cookbook_line.shp",
+                    dbf: "sld_cookbook_line.dbf"
                 }, function(data){
                     var features = parser.read(data.geojson);
                     vector.addFeatures(features);
