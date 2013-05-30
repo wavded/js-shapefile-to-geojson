@@ -26,7 +26,7 @@ Load DBF Only
 Load Shapefile w/ DBF Attributes
 
     var shapefile = new Shapefile({
-        shp: "myshape.dbf",
+        shp: "myshape.shp",
         dbf: "myshape.dbf"
     }, function(data){
         // data returned
@@ -38,7 +38,7 @@ Use with OpenLayers
         parser = new OpenLayer.Format.GeoJSON(),
         features,
         shapefile = new Shapefile({
-            shp: "myshape.dbf",
+            shp: "myshape.shp",
             dbf: "myshape.dbf"
         }, function(data){
             features = parser.read(data.geojson);
