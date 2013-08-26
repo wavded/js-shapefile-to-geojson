@@ -23,36 +23,36 @@ You can use it to parse shapefiles (.shp) or dBase files (.dbf) or both.  Here a
 
 Load Shapefile Only
 
-    var shapefile = new Shapefile("myshapefile.shp",function(data){
+    new Shapefile("myshapefile.shp", function (data) {
         // data returned
-    };
+    });
 
 Load DBF Only
 
-    var dbf = new DBF("mydbf.dbf",function(data){
+    new DBF("mydbf.dbf", function (data) {
         // data returned
-    };
+    });
 
 Load Shapefile w/ DBF Attributes
 
-    var shapefile = new Shapefile({
+    new Shapefile({
         shp: "myshape.shp",
         dbf: "myshape.dbf"
-    }, function(data){
+    }, function (data) {
         // data returned
-    };
+    });
 
 Use with OpenLayers
 
-    var
-        parser = new OpenLayer.Format.GeoJSON(),
-        features,
-        shapefile = new Shapefile({
-            shp: "myshape.shp",
-            dbf: "myshape.dbf"
-        }, function(data){
-            features = parser.read(data.geojson);
-        };
+    var parser = new OpenLayer.Format.GeoJSON(),
+        features;
+
+    new Shapefile({
+        shp: "myshape.shp",
+        dbf: "myshape.dbf"
+    }, function (data) {
+        features = parser.read(data.geojson);
+    });
 
 ### Resources
 
