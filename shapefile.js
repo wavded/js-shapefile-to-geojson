@@ -1,13 +1,17 @@
 (function(window,undefined){
 
     if(window.document && window.Worker){
-        var worker = new Worker("shapefile.js")
+        var worker = null;
 
         var Shapefile = function(o, callback){
             var
-                w = this.worker = worker,
                 t = this,
                 o = typeof o == "string" ? {shp: o} : o
+
+            if (!worker) {
+                var path = (o.jsRoot || "") + "shapefile.js"
+                var w = worker = this.worker = new Worker(path)
+            }
 
             w.onmessage = function(e){
                 t.data = e.date
@@ -69,7 +73,7 @@
         xhr.send()
 
         if(200 != xhr.status)
-        	throw "Unable to load " + o.shp + " status: " + xhr.status
+            throw "Unable to load " + o.shp + " status: " + xhr.status
 
         this.url = o.shp
         this.stream = new Gordon.Stream(xhr.responseText)
