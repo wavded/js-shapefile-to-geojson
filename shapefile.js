@@ -85,7 +85,7 @@
                 that.addDBFDataToGeoJSON(data)
                 that._postMessage()
             })
-        else this._postMessage
+        else this._postMessage()
     }
 
     Shapefile.prototype = {
