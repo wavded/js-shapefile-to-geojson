@@ -256,20 +256,22 @@
             for (var r = 0, record; record = records[r]; r++){
                 feature = {}, fbounds = record.bounds, points = record.points, parts = record.parts
                 feature.type = "Feature"
-                feature.bbox = [
-                    fbounds.left,
-                    fbounds.bottom,
-                    fbounds.right,
-                    fbounds.top
-                ]
+                if (record.shapeType !== 'Point') {
+                    feature.bbox = [
+                        fbounds.left,
+                        fbounds.bottom,
+                        fbounds.right,
+                        fbounds.top
+                    ]                    
+                }
                 geometry = feature.geometry = {}
 
                 switch (record.shapeType) {
                     case "Point":
                         geometry.type = "Point"
                         geometry.coordinates = [
-                            record.points.x,
-                            record.points,y ]
+                            record.x,
+                            record.y ]
                         break
                     case "MultiPoint":
                     case "PolyLine":
