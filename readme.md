@@ -7,42 +7,52 @@ Inspired by the excellent work by Tom Carden ([http://github.com/RandomEtc/shape
 
 I just got this out there so nothing is minified.  See index.html for an example of order.  All files need to be in the same directory.  This will use Web Workers if the browser support exists.  Not recommended for large files, more of an experiment than anything.
 
+### Running the Example
+
+Host the files (example won't run off disk, needs to be ran on a web server), a simple way to do this is run the following command in the project root:
+
+```sh
+python -m SimpleHTTPServer
+```
+
+And visit http://localhost:8000 in your favorite browser.
+
 ### Usage
 
 You can use it to parse shapefiles (.shp) or dBase files (.dbf) or both.  Here are some examples.
 
 Load Shapefile Only
 
-    var shapefile = new Shapefile("myshapefile.shp",function(data){
+    new Shapefile("myshapefile.shp", function (data) {
         // data returned
-    };
+    });
 
 Load DBF Only
 
-    var dbf = new DBF("mydbf.dbf",function(data){
+    new DBF("mydbf.dbf", function (data) {
         // data returned
-    };
+    });
 
 Load Shapefile w/ DBF Attributes
 
-    var shapefile = new Shapefile({
-        shp: "myshape.dbf",
+    new Shapefile({
+        shp: "myshape.shp",
         dbf: "myshape.dbf"
-    }, function(data){
+    }, function (data) {
         // data returned
-    };
+    });
 
 Use with OpenLayers
 
-    var
-        parser = new OpenLayer.Format.GeoJSON(),
-        features,
-        shapefile = new Shapefile({
-            shp: "myshape.dbf",
-            dbf: "myshape.dbf"
-        }, function(data){
-            features = parser.read(data.geojson);
-        };
+    var parser = new OpenLayer.Format.GeoJSON(),
+        features;
+
+    new Shapefile({
+        shp: "myshape.shp",
+        dbf: "myshape.dbf"
+    }, function (data) {
+        features = parser.read(data.geojson);
+    });
 
 ### Resources
 
