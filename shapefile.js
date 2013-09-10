@@ -11,6 +11,8 @@
             if (!worker) {
                 var path = (o.jsRoot || "") + "shapefile.js"
                 var w = worker = this.worker = new Worker(path)
+            } else {
+                var w = worker
             }
 
             w.onmessage = function(e){
@@ -64,36 +66,79 @@
     }
 
     var Shapefile = function(o,callback){
-        var xhr = new XMLHttpRequest(),
-            that = this,
-            o = typeof o == "string" ? {shp: o} : o
-
-        xhr.open("GET", o.shp, false)
-        xhr.overrideMimeType("text/plain; charset=x-user-defined")
-        xhr.send()
-
-        if(200 != xhr.status)
-            throw "Unable to load " + o.shp + " status: " + xhr.status
-
-        this.url = o.shp
-        this.stream = new Gordon.Stream(xhr.responseText)
+        var o = typeof o == "string" ? {shp: o} : o
         this.callback = callback
 
-        this.readFileHeader()
-        this.readRecords()
-        this.formatIntoGeoJson()
-
-        if(o.dbf) this.dbf = IN_WORKER ?
-            null :
-            new DBF(o.dbf,function(data){
-                that.addDBFDataToGeoJSON(data)
-                that._postMessage()
-            })
-        else this._postMessage
+        if (!!o.shp.lastModifiedDate)
+            this.handleFile(o);
+        else
+            this.handleUri(o);
     }
 
     Shapefile.prototype = {
         constructor: Shapefile,
+        handleUri: function(o) {
+            var xhr = new XMLHttpRequest(),
+                that = this
+            
+            xhr.open("GET", o.shp, false)
+            xhr.overrideMimeType("text/plain; charset=x-user-defined")
+            xhr.send()
+
+            if(200 != xhr.status)
+                throw "Unable to load " + o.shp + " status: " + xhr.status
+
+            this.url = o.shp
+            this.stream = new Gordon.Stream(xhr.responseText)
+
+            this.readFileHeader()
+            this.readRecords()
+            this.formatIntoGeoJson()
+
+            if(o.dbf) this.dbf = IN_WORKER ?
+                null :
+                new DBF(o.dbf,function(data){
+                    that.addDBFDataToGeoJSON(data)
+                    that._postMessage()
+                })
+            else this._postMessage()
+
+        },
+        handleFile: function(o) {
+            this.options = o
+            if (!!window.FileReader) {
+                var reader = new FileReader();
+            } else {
+                var reader = new FileReaderSync();
+            }
+
+            reader.onload = (function(that){
+                return function(e){
+                    that.onFileLoad(e.target.result)
+                }
+            })(this);
+
+            if (!!window.FileReader) {
+                reader.readAsBinaryString(o.shp);
+            } else {
+                this.onFileLoad(reader.readAsBinaryString(o.shp));   
+            }
+        },
+        onFileLoad: function(data) {
+            this.stream = new Gordon.Stream(data)
+
+            this.readFileHeader()
+            this.readRecords()
+            this.formatIntoGeoJson()            
+
+            if(this.options.dbf) this.dbf = IN_WORKER ?
+                null :
+                new DBF(this.options.dbf,function(data){
+                    that.addDBFDataToGeoJSON(data)
+                    that._postMessage()
+                })
+            else this._postMessage()
+        },
         _postMessage: function() {
             var data = {
                     header: this.header,
