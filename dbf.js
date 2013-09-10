@@ -56,27 +56,63 @@
         }
 
     var DBF = function(url, callback){
-        var xhr = new XMLHttpRequest();
-
-        xhr.open("GET", url, false)
-        xhr.overrideMimeType("text/plain; charset=x-user-defined")
-        xhr.send()
-
-        if(200 != xhr.status)
-        	throw "Unable to load " + url + " status: " + xhr.status
-
-        this.stream = new Gordon.Stream(xhr.responseText)
-        this.callback = callback
-
-        this.readFileHeader()
-        this.readFieldDescriptions()
-        this.readRecords()
-
-        this._postMessage()
+        if (!!url.lastModifiedDate)
+            this.handleFile(url, callback);
+        else
+            this.handleUri(url, callback);
     }
 
     DBF.prototype = {
         constructor: DBF,
+        handleFile: function(file, callback) {
+            this.callback = callback;
+
+            if (!!window.FileReader) {
+                var reader = new FileReader();
+            } else {
+                var reader = new FileReaderSync();
+            }
+
+            reader.onload = (function(that){
+                return function(e){
+                    that.onFileLoad(e.target.result)
+                }
+            })(this);
+
+            if (!!window.FileReader) {
+                reader.readAsBinaryString(file);
+            } else {
+                this.onFileLoad(reader.readAsBinaryString(file));
+            }
+        },
+        onFileLoad: function(data) {
+            this.stream = new Gordon.Stream(data)
+
+            this.readFileHeader()
+            this.readFieldDescriptions()
+            this.readRecords()
+
+            this._postMessage()
+        },
+        handleUri: function(url, callback) {
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("GET", url, false)
+            xhr.overrideMimeType("text/plain; charset=x-user-defined")
+            xhr.send()
+
+            if(200 != xhr.status)
+                throw "Unable to load " + url + " status: " + xhr.status
+
+            this.stream = new Gordon.Stream(xhr.responseText)
+            this.callback = callback
+
+            this.readFileHeader()
+            this.readFieldDescriptions()
+            this.readRecords()
+
+            this._postMessage()
+        },
         _postMessage: function() {
             var data = {
                     header: this.header,
