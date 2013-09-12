@@ -371,5 +371,5 @@
     }
 
     window["Shapefile"] = Shapefile;
-})(self)
+})(self);
 

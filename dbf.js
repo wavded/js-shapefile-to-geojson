@@ -245,5 +245,5 @@
 
     window["DBF"] = DBF;
 
-})(self)
+})(self);
 
