@@ -1,0 +1,25 @@
+{
+  "name": "js-shapefile-to-geojson",
+  "version": "0.1.0",
+  "description": "Convert Shapefiles to GeoJSON in the browser.",
+  "main": "shapefile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wavded/js-shapefile-to-geojson.git"
+  },
+  "keywords": [
+    "shapefile",
+    "geojson",
+    "gis"
+  ],
+  "author": "Marc Harter",
+  "license": "MIT",
+  "readmeFilename": "readme.md",
+  "gitHead": "caaf49ad4749f29ab7bc85ecd644c5e81e010e79",
+  "bugs": {
+    "url": "https://github.com/wavded/js-shapefile-to-geojson/issues"
+  }
+}
