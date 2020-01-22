@@ -131,16 +131,13 @@ var win = self,
                 t = this,
                 val = 0.0;
             if(numBytes > 4){
-                var i = Math.ceil(numBytes / 4);
-                while(i--){
-                    var buff = [],
-                        o = t.offset,
-                        j = o + (numBytes >= 4 ? 4 : numBytes % 4);
-                    while(j > o){
-                        buff.push(t.readByteAt(--j));
-                        numBytes--;
-                        t.offset++;
-                    }
+                var buff=[]
+                var o = t.offset,
+                    j = o + numBytes;
+                while(j > o){
+                    buff.push(t.readByteAt(--j));
+                    numBytes--;
+                    t.offset++;
                 }
                 var s = new Gordon.Stream(fromCharCode.apply(String, buff)),
                     sign = s.readUB(1),
