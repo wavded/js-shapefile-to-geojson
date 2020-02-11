@@ -56,7 +56,7 @@
         }
 
     var DBF = function(url, callback){
-        if (!!url.lastModifiedDate)
+        if (!!(url.lastModifiedDate || url.lastModified))
             this.handleFile(url, callback);
         else
             this.handleUri(url, callback);
