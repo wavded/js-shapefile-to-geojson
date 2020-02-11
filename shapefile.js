@@ -69,7 +69,7 @@
         var o = typeof o == "string" ? {shp: o} : o
         this.callback = callback
 
-        if (!!o.shp.lastModifiedDate)
+        if (!!(o.shp.lastModifiedDate || o.shp.lastModified))
             this.handleFile(o);
         else
             this.handleUri(o);
