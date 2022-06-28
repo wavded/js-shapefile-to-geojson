@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ShapeFile to GeoJSON Online Converter</title>
+    <style>
+      body {
+        text-align: center;
+        padding-top: 100px;
+      }
+      #drop {
+        border: 10px solid black;
+        text-align: center;
+        line-height: 100px;
+        width: 200px;
+        margin: auto;
+        font-size: 40px;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>HTML5 Shapefile to GeoJSON Converter</h1>
+    <p>
+      Using HTML5 File API, Web Workers, and OpenLayers Proj4js to convert ESRI Shapefile format into GeoJSON all on the client side. This code has been heavily inpired by this
+      <a href="https://github.com/RandomEtc/shapefile-js">Javascript Shapefile and DBF Loader</a>.
+    </p>
+
+    <p>Check out the source to see how it works. <a href="http://techslides.com/online-shapefile-to-geojson-converter/">Back to Article</a></p>
+
+    <h4>Drop or Select a Shapefile (.shp) and dBASE table file (.dbf)</h4>
+
+    <br /><br />
+
+    <div id="drop">DROP!<button onclick="document.querySelector('input').click()">Or Select</button></div>
+    <input style="visibility: collapse; width: 0px" type="file" onchange="upload(this.files[0])" />
+
+    <div id="output"></div>
+
+    <script src="http://rs1.adc4gis.com/js/openlayers/2.9.1/OpenLayers-Proj4.js"></script>
+    <script src="stream.js"></script>
+    <script src="myshapefile.js"></script>
+    <script src="mydbf.js"></script>
+
+    <script>
+      var files = [];
+      var filename = "";
+
+      /* Drag'n drop stuff */
+      window.ondragover = function (e) {
+        e.preventDefault();
+      };
+      window.ondrop = function (e) {
+        e.preventDefault();
+        document.getElementById("output").innerHTML = "Converting...";
+        var length = e.dataTransfer.items.length;
+        if (length != 2) {
+          document.getElementById("output").innerHTML = "Please select 2 files.";
+        } else {
+          var file1 = e.dataTransfer.files[0];
+          var file2 = e.dataTransfer.files[1];
+          filename = file1.name.slice(0, -4);
+
+          if (file1.name.match(/\.shp/) && file2.name.match(/\.dbf/)) {
+            //send shape first, then dbf
+            readFile(file1);
+            readFile(file2);
+          } else if (file1.name.match(/\.dbf/) && file2.name.match(/\.shp/)) {
+            //send shape first, then dbf
+            readFile(file2);
+            readFile(file1);
+          } else {
+            document.getElementById("output").innerHTML = "Please select 1 shp file and 1 dbf file.";
+          }
+        }
+      };
+
+      function sendit(json) {
+        document.getElementById("output").innerHTML = "Done, click to save: ";
+
+        var thefile = filename + ".json";
+
+        window.URL = window.URL || window.webkitURL;
+
+        var jsonarray = [];
+        jsonarray.push(json);
+
+        var blob = new Blob(jsonarray, { type: "application/json" });
+        var blobURL = window.URL.createObjectURL(blob);
+
+        var link = document.createElement("a");
+        link.href = blobURL;
+        link.download = thefile;
+        link.innerHTML = thefile;
+        link.addEventListener(
+          "click",
+          function () {
+            setTimeout(function () {
+              window.URL.revokeObjectURL(blobURL);
+              window.location.reload();
+            }, 1000);
+          },
+          false
+        );
+        document.getElementById("output").appendChild(link);
+      }
+
+      function readFile(file) {
+        oFReader = new FileReader();
+        oFReader.onloadend = function () {
+          files.push(this.result);
+          //if there are 2 files in our array, lets go and convert them
+          if (files.length == 2) {
+            //console.log(files);
+            //dbf files start with an o
+            if (files[0].charAt(1) == "o") {
+              convert(files[1], files[0]);
+            } else {
+              convert(files[0], files[1]);
+            }
+          }
+        };
+        oFReader.readAsBinaryString(file);
+      }
+
+      function convert(ishape, idbf) {
+        OpenLayers._getScriptLocation = function () {
+          return "http://rs1.adc4gis.com/js/openlayers/2.9.1/";
+        };
+
+        var starttime = +new Date(),
+          map = new OpenLayers.Map("map", { allOverlays: true }),
+          parser = new OpenLayers.Format.GeoJSON(),
+          vector = new OpenLayers.Layer.Vector("Converted"),
+          shapefile = new Shapefile(
+            {
+              shp: ishape,
+              dbf: idbf,
+            },
+            function (data) {
+              var json = JSON.stringify(data.geojson);
+
+              sendit(json);
+
+              //console.log("took",new Date - starttime,"milliseconds");
+            }
+          );
+      }
+    </script>
+  </body>
+</html>
