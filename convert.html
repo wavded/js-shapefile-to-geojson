@@ -36,7 +36,7 @@
 
     <div id="output"></div>
 
-    <script src="http://rs1.adc4gis.com/js/openlayers/2.9.1/OpenLayers-Proj4.js"></script>
+    <script src="OpenLayers-Proj4.js"></script>
     <script src="stream.js"></script>
     <script src="myshapefile.js"></script>
     <script src="mydbf.js"></script>
@@ -124,7 +124,7 @@
 
       function convert(ishape, idbf) {
         OpenLayers._getScriptLocation = function () {
-          return "http://rs1.adc4gis.com/js/openlayers/2.9.1/OpenLayers-Proj4.js";
+          return "OpenLayers-Proj4.js";
         };
 
         var starttime = +new Date(),
